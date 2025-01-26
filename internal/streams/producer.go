@@ -120,9 +120,11 @@ func (p *Producer) AddTrack(media *core.Media, codec *core.Codec, track *core.Re
 
 	log.Info().Msg("[GOLYF - AddTrack] before - if err := p.conn.(core.Consumer).AddTrack(media, codec, track); err != nil {")
 	if err := p.conn.(core.Consumer).AddTrack(media, codec, track); err != nil {
+		log.Info().Msg("[GOLYF - AddTrack] returning error")
 		return err
 	}
 
+	log.Info().Msg("[GOLYF - AddTrack - producer.go] before - append(p.senders, track)")
 	p.senders = append(p.senders, track)
 
 	if p.state == stateMedias {

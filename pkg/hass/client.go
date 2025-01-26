@@ -7,6 +7,7 @@ import (
 	"github.com/AlexxIT/go2rtc/pkg/core"
 	"github.com/AlexxIT/go2rtc/pkg/webrtc"
 	pion "github.com/pion/webrtc/v3"
+	"github.com/rs/zerolog"
 )
 
 type Client struct {
@@ -102,6 +103,7 @@ func (c *Client) GetTrack(media *core.Media, codec *core.Codec) (*core.Receiver,
 }
 
 func (c *Client) AddTrack(media *core.Media, codec *core.Codec, track *core.Receiver) error {
+	log.Info().Msg("[streams] clinet.go")
 	return c.conn.AddTrack(media, codec, track)
 }
 
@@ -116,3 +118,5 @@ func (c *Client) Stop() error {
 func (c *Client) MarshalJSON() ([]byte, error) {
 	return c.conn.MarshalJSON()
 }
+
+var log zerolog.Logger
