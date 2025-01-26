@@ -287,5 +287,6 @@ func ParseQuery(query map[string][]string) []*core.Media {
 		}
 	}
 
+	log.Trace().Msgf("[rtsp] GOLYF - parsing query:\n%s", query)
 	return core.ParseQuery(query)
 }
