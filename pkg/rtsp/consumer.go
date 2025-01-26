@@ -10,6 +10,7 @@ import (
 	"github.com/AlexxIT/go2rtc/pkg/mjpeg"
 	"github.com/AlexxIT/go2rtc/pkg/pcm"
 	"github.com/pion/rtp"
+	"github.com/rs/zerolog/log"
 )
 
 func (c *Conn) GetMedias() []*core.Media {
@@ -19,9 +20,10 @@ func (c *Conn) GetMedias() []*core.Media {
 
 func (c *Conn) AddTrack(media *core.Media, codec *core.Codec, track *core.Receiver) (err error) {
 	var channel byte
-
+	log.Info().Msg("[GOLYF - rtsp - consumer.go] - before switch")
 	switch c.mode {
 	case core.ModeActiveProducer: // backchannel
+		log.Info().Msg("[GOLYF - rtsp - consumer.go] - case - ModeActiveProducer")
 		c.stateMu.Lock()
 		defer c.stateMu.Unlock()
 
@@ -38,6 +40,7 @@ func (c *Conn) AddTrack(media *core.Media, codec *core.Codec, track *core.Receiv
 		c.state = StateSetup
 
 	case core.ModePassiveConsumer:
+		log.Info().Msg("[GOLYF - rtsp - consumer.go] - case - ModePassiveConsumer")
 		channel = byte(len(c.Senders)) * 2
 
 		// for consumer is better to use original track codec
@@ -46,21 +49,28 @@ func (c *Conn) AddTrack(media *core.Media, codec *core.Codec, track *core.Receiv
 		codec.PayloadType = byte(96 + len(c.Senders))
 
 	default:
+		log.Info().Msg("[GOLYF - rtsp - consumer.go] - case - default")
 		panic(core.Caller())
 	}
 
+	log.Info().Msg("[GOLYF - rtsp - consumer.go] - before - sender")
 	// save original codec to sender (can have Codec.Name = ANY)
 	sender := core.NewSender(media, codec)
 	// important to send original codec for valid IsRTP check
+	log.Info().Msg("[GOLYF - rtsp - consumer.go] - before - sender.Handler")
 	sender.Handler = c.packetWriter(track.Codec, channel, codec.PayloadType)
 
+	log.Info().Msg("[GOLYF - rtsp - consumer.go] - before - if")
 	if c.mode == core.ModeActiveProducer && track.Codec.Name == core.CodecPCMA {
 		// Fix Reolink Doorbell https://github.com/AlexxIT/go2rtc/issues/331
+		log.Info().Msg("[GOLYF - rtsp - consumer.go] - before - RepackG711")
 		sender.Handler = pcm.RepackG711(true, sender.Handler)
 	}
 
+	log.Info().Msg("[GOLYF - rtsp - consumer.go] - before - HandleRTP")
 	sender.HandleRTP(track)
 
+	log.Info().Msg("[GOLYF - rtsp - consumer.go] - before - append")
 	c.Senders = append(c.Senders, sender)
 	return nil
 }
