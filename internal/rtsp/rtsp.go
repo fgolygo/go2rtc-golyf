@@ -110,9 +110,9 @@ func rtspHandler(rawURL string) (core.Producer, error) {
 		conn.Listen(func(msg any) {
 			switch msg := msg.(type) {
 			case *tcp.Request:
-				log.Trace().Msgf("[rtsp] client request:\n%s", msg)
+				log.Trace().Msgf("[rtsp] GOLYF - client request:\n%s", msg)
 			case *tcp.Response:
-				log.Trace().Msgf("[rtsp] client response:\n%s", msg)
+				log.Trace().Msgf("[rtsp] GOLYF - client response:\n%s", msg)
 			case string:
 				log.Trace().Msgf("[rtsp] client msg: %s", msg)
 			}
