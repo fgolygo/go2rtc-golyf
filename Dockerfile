@@ -7,8 +7,8 @@ ARG GO_VERSION="1.22"
 
 # 1. Download ngrok binary (for support arm/v6)
 FROM alpine AS ngrok
-ARG TARGETARCH
-ARG TARGETOS
+ARG arm64
+ARG linux
 
 ADD https://bin.equinox.io/c/bNyj1mQVY4c/ngrok-v3-stable-${TARGETOS}-${TARGETARCH}.tgz /
 RUN tar -xzf /ngrok-v3-stable-${TARGETOS}-${TARGETARCH}.tgz -C /bin
