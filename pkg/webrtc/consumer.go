@@ -8,6 +8,7 @@ import (
 	"github.com/AlexxIT/go2rtc/pkg/h265"
 	"github.com/AlexxIT/go2rtc/pkg/pcm"
 	"github.com/pion/rtp"
+	"github.com/rs/zerolog"
 )
 
 func (c *Conn) GetMedias() []*core.Media {
@@ -15,6 +16,7 @@ func (c *Conn) GetMedias() []*core.Media {
 }
 
 func (c *Conn) AddTrack(media *core.Media, codec *core.Codec, track *core.Receiver) error {
+	log.Info().Msg("[GOLYF - AddTrack] in consumer.go")
 	core.Assert(media.Direction == core.DirectionSendonly)
 
 	for _, sender := range c.Senders {
@@ -32,6 +34,7 @@ func (c *Conn) AddTrack(media *core.Media, codec *core.Codec, track *core.Receiv
 		panic(core.Caller())
 	}
 
+	log.Info().Msg("[GOLYF - AddTrack] in consumer.go before getSenderTrack")
 	localTrack := c.getSenderTrack(media.ID)
 	if localTrack == nil {
 		return errors.New("webrtc: can't get track")
@@ -39,6 +42,7 @@ func (c *Conn) AddTrack(media *core.Media, codec *core.Codec, track *core.Receiv
 
 	payloadType := codec.PayloadType
 
+	log.Info().Msg("[GOLYF - AddTrack] in consumer.go before NewSender")
 	sender := core.NewSender(media, codec)
 	sender.Handler = func(packet *rtp.Packet) {
 		c.Send += packet.MarshalSize()
@@ -46,6 +50,7 @@ func (c *Conn) AddTrack(media *core.Media, codec *core.Codec, track *core.Receiv
 		_ = localTrack.WriteRTP(payloadType, packet)
 	}
 
+	log.Info().Msg("[GOLYF - AddTrack] in consumer.go before switch")
 	switch track.Codec.Name {
 	case core.CodecH264:
 		sender.Handler = h264.RTPPay(1200, sender.Handler)
@@ -88,3 +93,5 @@ func (c *Conn) AddTrack(media *core.Media, codec *core.Codec, track *core.Receiv
 	c.Senders = append(c.Senders, sender)
 	return nil
 }
+
+var log zerolog.Logger

@@ -2,6 +2,7 @@ package roborock
 
 import (
 	"github.com/AlexxIT/go2rtc/pkg/core"
+	"github.com/rs/zerolog"
 )
 
 func (c *Client) GetMedias() []*core.Media {
@@ -18,6 +19,7 @@ func (c *Client) GetTrack(media *core.Media, codec *core.Codec) (*core.Receiver,
 
 func (c *Client) AddTrack(media *core.Media, codec *core.Codec, track *core.Receiver) error {
 	c.backchannel = true
+	log.Info().Msg("[GOLYF - AddTrack] in producer.go")
 	return c.conn.AddTrack(media, codec, track)
 }
 
@@ -44,3 +46,5 @@ func (c *Client) Stop() error {
 func (c *Client) MarshalJSON() ([]byte, error) {
 	return c.conn.MarshalJSON()
 }
+
+var log zerolog.Logger

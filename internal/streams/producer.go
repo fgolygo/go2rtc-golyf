@@ -118,6 +118,7 @@ func (p *Producer) AddTrack(media *core.Media, codec *core.Codec, track *core.Re
 		return errors.New("add track from none state")
 	}
 
+	log.Info().Msg("[GOLYF - AddTrack] before - if err := p.conn.(core.Consumer).AddTrack(media, codec, track); err != nil {")
 	if err := p.conn.(core.Consumer).AddTrack(media, codec, track); err != nil {
 		return err
 	}
