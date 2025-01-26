@@ -118,11 +118,21 @@ func (p *Producer) AddTrack(media *core.Media, codec *core.Codec, track *core.Re
 		return errors.New("add track from none state")
 	}
 
-	log.Info().Msg("[GOLYF - AddTrack] before - if err := p.conn.(core.Consumer).AddTrack(media, codec, track); err != nil {")
-	if err := p.conn.(core.Consumer).AddTrack(media, codec, track); err != nil {
-		log.Info().Msg("[GOLYF - AddTrack] returning error")
-		return err
+	if consumer, ok := p.conn.(core.Consumer); ok {
+		log.Info().Msgf("Consumer type: %T", consumer)
+		if err := consumer.AddTrack(media, codec, track); err != nil {
+			log.Info().Msg("Error in AddTrack")
+			return err
+		}
+	} else {
+		log.Error().Msg("p.conn is not a core.Consumer")
 	}
+
+	// log.Info().Msg("[GOLYF - AddTrack] before - if err := p.conn.(core.Consumer).AddTrack(media, codec, track); err != nil {")
+	// if err := p.conn.(core.Consumer).AddTrack(media, codec, track); err != nil {
+	// 	log.Info().Msg("[GOLYF - AddTrack] returning error")
+	// 	return err
+	// }
 
 	log.Info().Msg("[GOLYF - AddTrack - producer.go] before - append(p.senders, track)")
 	p.senders = append(p.senders, track)
