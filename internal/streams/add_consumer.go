@@ -64,7 +64,7 @@ func (s *Stream) AddConsumer(cons core.Consumer) (err error) {
 					}
 					// Step 5. Add track to consumer
 					if err = cons.AddTrack(consMedia, consCodec, track); err != nil {
-						log.Info().Err(err).Msg("[streams] can't add track")
+						log.Info().Err(err).Msg("[streams - DirectionRecvonly] can't add track")
 						continue
 					}
 
@@ -78,7 +78,7 @@ func (s *Stream) AddConsumer(cons core.Consumer) (err error) {
 					}
 					// Step 5. Add track to producer
 					if err = prod.AddTrack(prodMedia, prodCodec, track); err != nil {
-						log.Info().Err(err).Msg("[streams] can't add track")
+						log.Info().Err(err).Msg("[streams - DirectionSendonly] can't add track")
 						prodErrors[prodN] = err
 						continue
 					}
